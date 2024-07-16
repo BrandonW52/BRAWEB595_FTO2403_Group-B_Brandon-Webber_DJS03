@@ -1,8 +1,10 @@
+// Imports data from data.js
 import { books, authors, genres, BOOKS_PER_PAGE } from "./data.js";
 
 let page = 1;
 let matches = books;
 
+// HTML Elements Object
 const htmlElements = {
   head: document.querySelector("head"),
   header: document.querySelector("header"),
@@ -109,19 +111,6 @@ for (const [id, name] of Object.entries(authors)) {
 
 htmlElements.dataSearchAuthers.appendChild(authorsHtml);
 
-if (
-  window.matchMedia &&
-  window.matchMedia("(prefers-color-scheme: dark)").matches
-) {
-  htmlElements.dataSettingsTheme.value = "night";
-  document.documentElement.style.setProperty("--color-dark", "255, 255, 255");
-  document.documentElement.style.setProperty("--color-light", "10, 10, 20");
-} else {
-  htmlElements.dataSettingsTheme.value = "day";
-  document.documentElement.style.setProperty("--color-dark", "10, 10, 20");
-  document.documentElement.style.setProperty("--color-light", "255, 255, 255");
-}
-
 htmlElements.dataListButton.innerText = `Show more (${
   books.length - BOOKS_PER_PAGE
 })`;
@@ -158,11 +147,30 @@ htmlElements.dataListClose.addEventListener("click", () => {
   htmlElements.dataListActive.open = false;
 });
 
+// Checks user prefrance for color theme
+if (
+  window.matchMedia &&
+  window.matchMedia("(prefers-color-scheme: dark)").matches
+) {
+  let theme = "night";
+  toggleTheme(theme);
+} else {
+  let theme = "day";
+  toggleTheme(theme);
+}
+
+// Handles color theme change
 htmlElements.dataSettingsForm.addEventListener("submit", (event) => {
   event.preventDefault();
   const formData = new FormData(event.target);
   const { theme } = Object.fromEntries(formData);
+  toggleTheme(theme);
 
+  htmlElements.dataSettingsOverlay.open = false;
+});
+
+// Switches between Light and Dark themes
+function toggleTheme(theme) {
   if (theme === "night") {
     document.documentElement.style.setProperty("--color-dark", "255, 255, 255");
     document.documentElement.style.setProperty("--color-light", "10, 10, 20");
@@ -173,9 +181,7 @@ htmlElements.dataSettingsForm.addEventListener("submit", (event) => {
       "255, 255, 255"
     );
   }
-
-  htmlElements.dataSettingsOverlay.open = false;
-});
+}
 
 htmlElements.dataSearchForm.addEventListener("submit", (event) => {
   event.preventDefault();
