@@ -57,29 +57,33 @@ document.addEventListener("DOMContentLoaded", () => {
 //     .catch((error) => console.error("Error fetching meta.html"));
 // });
 
-const starting = document.createDocumentFragment();
-
-for (const { author, id, image, title } of matches.slice(0, BOOKS_PER_PAGE)) {
+// Creates && Displays book preview
+function createBookElement({ author, id, image, title }) {
   const element = document.createElement("button");
-  element.classList = "preview";
-  element.setAttribute("data-preview", id);
+  element.classList.add("preview");
+  element.dataset.preview = id;
 
   element.innerHTML = `
-        <img
-            class="preview__image"
-            src="${image}"
-        />
-        
-        <div class="preview__info">
-            <h3 class="preview__title">${title}</h3>
-            <div class="preview__author">${authors[author]}</div>
-        </div>
-    `;
+    <img class="preview__image" src="${image}" />
+    <div class="preview__info">
+      <h3 class="preview__title">${title}</h3>
+      <div class="preview__author">${authors[author]}</div>
+    </div>
+  `;
 
-  starting.appendChild(element);
+  return element;
 }
 
-htmlElements.dataListItems.appendChild(starting);
+function addBookPreview() {
+  const starting = document.createDocumentFragment();
+  for (const book of matches.slice(0, BOOKS_PER_PAGE)) {
+    const element = createBookElement(book);
+    starting.appendChild(element);
+  }
+  htmlElements.dataListItems.appendChild(starting);
+}
+
+document.addEventListener("DOMContentLoaded", addBookPreview);
 
 const genreHtml = document.createDocumentFragment();
 const firstGenreElement = document.createElement("option");
@@ -126,6 +130,7 @@ htmlElements.dataListButton.innerHTML = `
     })</span>
 `;
 
+// Handles Click events
 htmlElements.dataSearchCancel.addEventListener("click", () => {
   htmlElements.dataSearchOverlay.open = false;
 });
